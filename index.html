@@ -31,6 +31,7 @@
   #scoreWrap{position:fixed;top:calc(10px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);display:none;
     flex-direction:column;align-items:center;gap:5px;z-index:10;pointer-events:none}
   #score{font-size:30px;font-weight:700;color:#fff;text-shadow:0 2px 8px rgba(70,58,94,.5)}
+  @media (max-width:600px){ #scoreWrap{top:calc(84px + env(safe-area-inset-top))} } /* clear of the chips on phones */
   #mult{background:var(--gold);color:#6b4a00;border-radius:12px;padding:2px 10px;font-size:12px;font-weight:700;display:none}
   #hpWrap{width:170px;height:11px;border-radius:6px;background:rgba(255,255,255,.35);overflow:hidden;
     box-shadow:0 1px 6px rgba(70,58,94,.3)}
@@ -92,7 +93,27 @@
   .pthumb.sel{border-color:var(--coral);background:#fff}
   #bootMsg{z-index:2;font-size:12px;font-weight:600;color:#5d4a86;margin:2px 0 4px}
   body:not(.booting) #bootMsg{display:none}
-  body.booting .modeCard{opacity:.5;pointer-events:none}
+  body.booting #btnTakeoff{opacity:.5;pointer-events:none}
+  #stepDots{display:flex;gap:6px;margin:0 0 8px;z-index:2}
+  #stepDots i{width:8px;height:8px;border-radius:4px;background:rgba(255,255,255,.45);transition:all .25s}
+  #stepDots i.on{width:22px;background:#fff}
+  .step{display:flex;flex-direction:column;align-items:center;z-index:2;width:min(400px,92vw)}
+  .stepHead{font-size:15px;font-weight:700;color:#4a3a72;margin:2px 0 8px;letter-spacing:.3px}
+  .stepHead.small{font-size:13px;margin:10px 0 6px}
+  .bigBtn{width:100%;border:none;border-radius:18px;padding:14px;margin-top:8px;font-family:inherit;font-weight:700;
+    font-size:16px;background:var(--coral);color:#fff;box-shadow:0 6px 18px rgba(255,126,95,.4);cursor:pointer}
+  .bigBtn:active{transform:scale(.98)}
+  .linkBtn{border:none;background:rgba(255,255,255,.55);color:var(--ink);font-family:inherit;font-weight:600;
+    font-size:12px;border-radius:12px;padding:5px 12px;margin-bottom:6px;cursor:pointer}
+  .step .modeCard{width:100%;margin:4px 0;border:2px solid transparent}
+  .modeCard.sel{border-color:var(--coral);box-shadow:0 8px 24px rgba(255,126,95,.3)}
+  #diffRow{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%}
+  .diffBtn{border:2px solid transparent;background:rgba(255,255,255,.6);border-radius:14px;padding:9px 4px;
+    font-family:inherit;font-weight:700;font-size:14px;color:var(--ink);cursor:pointer}
+  .diffBtn.sel{background:#fff;border-color:var(--coral)}
+  #diffDesc{font-size:11.5px;color:#5d4a86;font-weight:500;line-height:1.4;margin:7px 4px 2px;min-height:32px;text-align:center}
+  #warnChip{display:none;background:#ff5a4a;color:#fff;animation:blink .5s steps(2) infinite}
+  @keyframes blink{50%{opacity:.55}}
   #radar{position:fixed;left:12px;top:calc(96px + env(safe-area-inset-top));z-index:10;
     border-radius:50%;background:rgba(43,33,64,.45);box-shadow:0 2px 10px rgba(70,58,94,.3);display:none;pointer-events:none}
 
@@ -121,7 +142,7 @@
     justify-content:flex-start;overflow-y:auto;touch-action:pan-y;-webkit-overflow-scrolling:touch;
     padding-top:calc(62px + env(safe-area-inset-top));padding-bottom:calc(24px + env(safe-area-inset-bottom))}
   #menu #title{margin-top:auto}
-  #menu #btnCollect{margin-bottom:auto}
+  #menu .step{margin-bottom:auto}
   body.inMenu #btnRow{top:calc(10px + env(safe-area-inset-top))}
   @media (max-height:640px){
     #menu{padding-top:calc(56px + env(safe-area-inset-top))}
@@ -186,6 +207,7 @@
   <div id="stats">
     <div class="chip" id="speedChip">140 km/h</div>
     <div class="chip" id="altChip">60 m</div>
+    <div class="chip" id="warnChip"></div>
   </div>
 </div>
 <div id="scoreWrap">
@@ -229,24 +251,45 @@
   </div>
   <div id="title">Genius Skies</div>
   <div id="subtitle">16 colossal wonders · 9 monuments of genius · one uninvited starship</div>
-  <div id="hangar">
-    <div id="hgStage"><canvas id="hgCanvas"></canvas>
-      <button class="hgNav" id="hgPrev" aria-label="Previous plane">‹</button>
-      <button class="hgNav" id="hgNext" aria-label="Next plane">›</button></div>
-    <div id="hgName"></div>
-    <div id="hgTrait"></div>
-    <div id="hgStats"></div>
-    <div id="hgThumbs"></div>
+  <div id="stepDots"><i class="on"></i><i></i></div>
+  <div class="step" id="step1">
+    <div class="stepHead">Choose your aircraft</div>
+    <div id="hangar">
+      <div id="hgStage"><canvas id="hgCanvas"></canvas>
+        <button class="hgNav" id="hgPrev" aria-label="Previous plane">‹</button>
+        <button class="hgNav" id="hgNext" aria-label="Next plane">›</button></div>
+      <div id="hgName"></div>
+      <div id="hgTrait"></div>
+      <div id="hgStats"></div>
+      <div id="hgThumbs"></div>
+    </div>
+    <button class="bigBtn" id="btnNext">Next: choose your mission ›</button>
   </div>
-  <div id="bootMsg">Building the world…</div>
-  <button class="modeCard" id="btnFree">
-    <div class="ic" style="background:#ffe4d1">🧭</div>
-    <div><b>Free Flight</b><span>Relaxed sightseeing. Bounce off the wonders, learn fun facts, snap postcards. No damage, ever.</span></div>
-  </button>
-  <button class="modeCard" id="btnCollect">
-    <div class="ic" style="background:#fff0c9">⭐</div>
-    <div><b>Collect &amp; Explore</b><span>Rings, patrols, splitting bombers and the Leviathan. Hull never heals in the air: land or grab green kits. Zero hull = game over.</span></div>
-  </button>
+  <div class="step" id="step2" style="display:none">
+    <div class="stepHead">Choose your mission</div>
+    <button class="linkBtn" id="btnBack">‹ <span id="pickedName">Classic</span> · change plane</button>
+    <button class="modeCard" id="btnCollect">
+      <div class="ic" style="background:#fff0c9">⭐</div>
+      <div><b>Collect &amp; Explore</b><span>Golden rings, patrols, splitting bombers and the Leviathan. Land on the wonders for bonus points.</span></div>
+    </button>
+    <button class="modeCard" id="btnCombat">
+      <div class="ic" style="background:#ffd9d2">⚔️</div>
+      <div><b>Combat</b><span>Dogfight for survival. Endless enemy waves: shoot down as many as you can before you go down.</span></div>
+    </button>
+    <button class="modeCard" id="btnFree">
+      <div class="ic" style="background:#ffe4d1">🧭</div>
+      <div><b>Free Flight</b><span>Relaxed sightseeing. Fun facts, postcards, no damage ever.</span></div>
+    </button>
+    <div class="stepHead small">Difficulty</div>
+    <div id="diffRow">
+      <button class="diffBtn" data-d="easy">Easy</button>
+      <button class="diffBtn" data-d="hard">Hard</button>
+      <button class="diffBtn" data-d="realistic">Realistic</button>
+    </div>
+    <div id="diffDesc"></div>
+    <div id="bootMsg">Building the world…</div>
+    <button class="bigBtn" id="btnTakeoff">Take off ✈</button>
+  </div>
 </div>
 
 <!-- Game over -->
@@ -1983,6 +2026,18 @@ const PLANES=[
   snd:[150,180,800,1600]},
 ];
 let CUR=PLANES[0];
+// flight-model data for Hard/Realistic, from real-aircraft ratios:
+// vs = clean stall speed, vr = rotation speed, tw = thrust-to-weight, roll = roll rate (rad/s),
+// gLim = airframe limit (FAA: normal +3.8 g, aerobatic +6 g, transport +2.5 g), tail = tail-strike pitch (rad)
+const SIM={
+  'Classic':        {vs:114, vr:128, tw:0.32, roll:1.3, gLim:3.8, tail:0.30, rot:0.25},
+  'Stunt Biplane':  {vs:96,  vr:105, tw:0.45, roll:3.6, gLim:6.0, tail:0.30, rot:0.30},
+  'Arrow Jet':      {vs:135, vr:160, tw:0.55, roll:2.8, gLim:7.0, tail:0.26, rot:0.20},
+  'Jumbo Twinjet':  {vs:135, vr:150, tw:0.30, roll:0.7, gLim:2.5, tail:0.19, rot:0.10},
+  'A380 Superjumbo':{vs:130, vr:150, tw:0.27, roll:0.5, gLim:2.5, tail:0.19, rot:0.09},
+  'F-14 Tomcat':    {vs:140, vr:160, tw:0.85, roll:2.6, gLim:7.5, tail:0.26, rot:0.18, ab:true}
+};
+const SIM_G=60;   // gravity in world units
 let critFlames=[];
 function setPlayerPlane(def){
   CUR=def;
@@ -1997,6 +2052,11 @@ function setPlayerPlane(def){
   plane.add(inner);
   plane.scale.setScalar(def.scale);
   plane.userData.model=inner;
+  F.sim=SIM[def.name];
+  // measure the wingspan so the chase camera can always fit it on screen
+  plane.rotation.set(0,0,0); plane.updateMatrixWorld(true);
+  const bb=new THREE.Box3().setFromObject(inner), bs=new THREE.Vector3(); bb.getSize(bs);
+  F.halfSpan=bs.x/2;
   critFlames=[];
   const md=inner.userData;
   const pts=md.jetFlames.length? md.jetFlames.map(f=>[f.position.x,f.position.y+0.5,f.position.z+2])
@@ -2311,14 +2371,21 @@ function setEngine(on){
 // =========================================================
 const G={mode:null, running:false, score:0, best:0, streak:0, mult:1, streakT:0,
   photos:[], hp:100, hpMax:100, hpDelay:0, critical:false, dead:false, planeSel:0,
-  invY:false, landedOn:new Set()};
+  invY:false, landedOn:new Set(), diff:'easy', pickMode:'collect', kills:0, wave:0, waveT:0};
+// difficulty: damage taken, hull size, which aids exist, and the flight-model limits
+const DIFF={
+  easy:{label:'Easy', dmg:1, hull:1, homing:true, kits:true},
+  hard:{label:'Hard', dmg:1.25, hull:0.8, homing:true, kits:true, twK:1.6, rollK:1.3, gearOk:22, gearCrash:40},
+  realistic:{label:'Realistic', dmg:1, hull:0.4, homing:false, kits:false, twK:1, rollK:1, gearOk:9, gearCrash:15}
+};
+const isHostile=()=>G.mode==='collect'||G.mode==='combat';
 const $=id=>document.getElementById(id);
 const arrEl=document.querySelector('#nearest .arr');
 const rings=[];
 const facts={};
 let shakeT=0;
 
-function hpFactor(){ return G.mode==='collect' ? G.hp/G.hpMax : 1; }
+function hpFactor(){ return isHostile() ? G.hp/G.hpMax : 1; }
 function respFactor(){
   const h=hpFactor();
   let r=h<0.35 ? 0.45+0.55*(h/0.35) : 1;
@@ -2414,16 +2481,29 @@ function showToast(title,body,ms){
   clearTimeout(toastT); toastT=setTimeout(()=>$('toast').classList.remove('show'), ms||5000);
 }
 function hudMode(){
-  $('modeChip').textContent=G.mode==='free'?'✈️ Free Flight':'⭐ Collect & Explore';
-  $('scoreWrap').style.display=G.mode==='collect'?'flex':'none';
+  const nm={free:'✈️ Free Flight',collect:'⭐ Collect',combat:'⚔️ Combat'}[G.mode];
+  $('modeChip').textContent=nm+' · '+DIFF[G.diff].label;
+  $('scoreWrap').style.display=isHostile()?'flex':'none';
   $('photoBar').style.display=G.mode==='free'?'flex':'none';
   $('nearest').style.display='inline-flex';
 }
 function hudScore(){
-  $('score').textContent=G.score;
   const m=$('mult');
+  if(G.mode==='combat'){
+    $('score').textContent='💥 '+G.kills;
+    m.style.display=G.wave?'inline-block':'none'; m.textContent='Wave '+G.wave;
+    return;
+  }
+  $('score').textContent=G.score;
   if(G.mult>1){ m.style.display='inline-block'; m.textContent='×'+G.mult+' streak'; }
   else m.style.display='none';
+}
+function bestKey(){ return 'gs-best-'+G.mode+'-'+G.diff; }
+function recordBest(v){
+  let b=0;
+  try{ b=+localStorage.getItem(bestKey())||0; }catch(e){}
+  if(v>b){ b=v; try{ localStorage.setItem(bestKey(),String(v)); }catch(e){} }
+  return b;
 }
 function hudHP(){
   const f=$('hpFill');
@@ -2454,7 +2534,8 @@ function setCritical(on,silent){
   }
 }
 function applyDamage(d){
-  if(G.mode!=='collect'||G.dead) return;
+  if(!isHostile()||G.dead) return;
+  d*=DIFF[G.diff].dmg;
   G.hp=Math.max(0,G.hp-d); G.hpDelay=4; hudHP();
   if(G.hp<=0){ destroyPlane('Hull integrity reached zero.'); return; }
   if(!G.critical&&G.hp<=G.hpMax*0.2) setCritical(true);
@@ -2470,8 +2551,12 @@ function destroyPlane(reason){
   plane.visible=false; shadow.visible=false;
   shakeT=1;
   setTimeout(()=>{
+    if(!G.dead||document.body.classList.contains('inMenu')) return; // already left for the menu
     $('goReason').textContent=reason;
-    $('goStats').textContent='Score '+G.score+' · Best '+G.best;
+    const runV=G.mode==='combat'?G.kills:G.score, best=recordBest(runV);
+    $('goStats').textContent=G.mode==='combat'
+      ? 'Kills '+G.kills+' · Wave '+G.wave+' · Best '+best
+      : 'Score '+G.score+' · Best '+best;
     $('gameOver').style.display='flex';
   },1100);
 }
@@ -2484,6 +2569,7 @@ function startMode(mode){
   if(AU.ctx&&AU.ctx.state==='suspended')AU.ctx.resume();
   G.mode=mode; G.running=true;
   setPlayerPlane(PLANES[G.planeSel]);
+  G.hpMax=Math.round(G.hpMax*DIFF[G.diff].hull);
   G.dead=false; setCritical(false,true);
   plane.visible=true; shadow.visible=true;
   $('gameOver').style.display='none';
@@ -2491,10 +2577,20 @@ function startMode(mode){
   G.landedOn.clear();
   F.gearDown=false; F.grounded=false; F.boost=100; F.boosting=false;
   $('gearBtn').classList.remove('down');
-  setEnemies(mode==='collect');
-  setMedkits(mode==='collect');
+  setEnemies(isHostile());
+  setMedkits(isHostile()&&DIFF[G.diff].kits);
   hudScore(); hudHP();
   F.pos.set(0,160,-1000); F.heading=0; F.pitch=0; F.roll=0; F.speed=170; F.targetSpeed=170;
+  // Hard/Realistic start trimmed for level flight at a safe speed
+  F.warn=''; F.nG=1; F.aoa=0; F.tailHit=false; F.hornT=0; F.stalled=false; F.dropDir=1;
+  if(G.diff!=='easy'){
+    const S=F.sim, Tm=S.tw*DIFF[G.diff].twK*SIM_G, ad=Tm/(F.maxS*F.maxS), bd=ad*Math.pow(1.35*S.vs,4);
+    const V0=Math.max(170,1.45*S.vs);
+    F.speed=V0; F.vTrim=V0;
+    F.pos.y=Math.max(F.pos.y,terrainH(F.pos.x,F.pos.z)+300); // more room: nothing levels itself here
+    F.throttle=clamp((ad*V0*V0+bd/(V0*V0))/Tm,0.05,1);
+  } else F.throttle=0.6;
+  $('boostGrp').style.display=(G.diff!=='realistic'||F.sim.ab)?'flex':'none';
   for(const k in facts) delete facts[k];
   ringsSetActive(mode==='collect');
   $('menu').style.display='none';
@@ -2506,8 +2602,12 @@ function startMode(mode){
   $('radar').style.display='block';
   $('pauseBtn').style.display='block';
   hudMode(); setEngine(true);
-  if(mode==='free') showToast(CUR.name+' ready ✈️','Steep climbs, 🚀 rockets, 🛬 land anywhere — even on rooftops. No damage here, just fun.',7000);
-  else showToast(CUR.name+' ready ⭐','Hull never heals in the air — land to repair or grab green kits. Bombers split when they die. Good luck!',7000);
+  const dTip={easy:'',
+    hard:' Hard: the plane holds whatever attitude you leave it in. Watch your speed.',
+    realistic:' Realistic: stalls, g-limits, real take-off and landing limits. Fly it like the real thing.'}[G.diff];
+  if(mode==='free') showToast(CUR.name+' ready ✈️','No damage here, just fun.'+dTip,7000);
+  else if(mode==='combat') showToast(CUR.name+' ready ⚔️','Waves of hostiles are coming. Shoot down as many as you can.'+dTip,7000);
+  else showToast(CUR.name+' ready ⭐','Hull never heals in the air: land to repair or grab green kits.'+dTip,7000);
 }
 $('goRetry').addEventListener('click',()=>{ $('gameOver').style.display='none'; startMode(G.mode); });
 $('goMenu').addEventListener('click',()=>{ $('gameOver').style.display='none'; $('btnMenu').click(); });
@@ -2604,8 +2704,31 @@ $('goMenu').addEventListener('click',()=>{ $('gameOver').style.display='none'; $
   }
   requestAnimationFrame(tick);
 })();
-$('btnFree').addEventListener('click',()=>startMode('free'));
-$('btnCollect').addEventListener('click',()=>startMode('collect'));
+function showStep(n){
+  $('step1').style.display=n===1?'flex':'none';
+  $('step2').style.display=n===2?'flex':'none';
+  document.querySelectorAll('#stepDots i').forEach((d,i)=>d.classList.toggle('on',i===n-1));
+  if(n===2) $('pickedName').textContent=PLANES[G.planeSel].name;
+  $('menu').scrollTop=0;
+}
+$('btnNext').addEventListener('click',()=>showStep(2));
+$('btnBack').addEventListener('click',()=>showStep(1));
+const MODE_BTNS={collect:'btnCollect',combat:'btnCombat',free:'btnFree'};
+function selectMode(m){ G.pickMode=m; for(const k in MODE_BTNS) $(MODE_BTNS[k]).classList.toggle('sel',k===m); }
+for(const k in MODE_BTNS) $(MODE_BTNS[k]).addEventListener('click',()=>selectMode(k));
+const DIFF_DESC={
+  easy:'Forgiving arcade flight: the plane levels itself, take-off is easy and gravity is gentle.',
+  hard:'No auto-levelling: the plane holds the attitude you give it. Climbs cost speed, slow flight stalls.',
+  realistic:'Real flight physics: stalls, g-limits, real take-off speeds, fragile airframes. No nitro (F-14 keeps its afterburner), no homing, no repairs.'
+};
+function selectDiff(d){
+  G.diff=d;
+  document.querySelectorAll('.diffBtn').forEach(b=>b.classList.toggle('sel',b.dataset.d===d));
+  $('diffDesc').textContent=DIFF_DESC[d];
+}
+document.querySelectorAll('.diffBtn').forEach(b=>b.addEventListener('click',()=>selectDiff(b.dataset.d)));
+$('btnTakeoff').addEventListener('click',()=>startMode(G.pickMode));
+selectMode('collect'); selectDiff('easy');
 $('pauseBtn').addEventListener('click',()=>{ G.running=false; setEngine(false); $('pauseMenu').style.display='flex'; });
 $('btnResume').addEventListener('click',()=>{ $('pauseMenu').style.display='none'; G.running=true; setEngine(true); });
 $('btnRestart').addEventListener('click',()=>{ startMode(G.mode); });
@@ -2620,6 +2743,7 @@ $('btnMenu').addEventListener('click',()=>{
   $('scoreWrap').style.display='none'; $('nearest').style.display='none';
   $('menu').style.display='flex';
   document.body.classList.add('inMenu');
+  showStep(2);
 });
 $('btnInvert').addEventListener('click',function(){
   G.invY=!G.invY;
@@ -2792,7 +2916,8 @@ function impact(st,b,n,ax,ay,az){
   } else if(!st){
     for(let i=0;i<3;i++) spawnDebris(ax,ay,az, 24,24,24, PAL.bronze, n);
   }
-  if(G.mode==='collect'&&!G.dead){
+  if(isHostile()&&!G.dead){
+    if(G.diff==='realistic'&&pre>90){ destroyPlane('Hit a structure at '+Math.round(pre*1.2)+' km/h. Real airframes don\u2019t bounce.'); return; }
     if(G.critical&&pre>230){ destroyPlane('Critical impact — the airframe gave up.'); return; }
     const dmg=Math.round(6+pre*0.09);
     applyDamage(dmg);
@@ -2883,7 +3008,7 @@ function toggleGear(){
   $('gearBtn').classList.toggle('down',F.gearDown);
   sfx([220,180],0.18,'square',0.06);
 }
-$('gearBtn').addEventListener('click',toggleGear);
+$('gearBtn').addEventListener('pointerdown',e=>{ e.preventDefault(); toggleGear(); });
 
 // ---------- Boost & barrel roll ----------
 let boostBtnHeld=false;
@@ -2918,7 +3043,7 @@ function fireRocket(){
   planeForward(fwd3);
   // lock the nearest hostile in the forward cone — the missile does the rest
   r.tgt=null;
-  if(G.mode==='collect'){
+  if(isHostile()&&DIFF[G.diff].homing){
     let bd=1600;
     for(const e of ENEMIES){
       if(e.hp<=0) continue;
@@ -2933,7 +3058,12 @@ function fireRocket(){
   r.life=3; r.g.visible=true;
   sfx([900,500,240],0.25,'sawtooth',0.12);
 }
-$('fireBtn').addEventListener('click',fireRocket);
+let fireHeld=false;
+{ // pointerdown works with a second finger while the joystick is held; holding auto-fires
+  const fb=$('fireBtn');
+  fb.addEventListener('pointerdown',e=>{ e.preventDefault(); fireHeld=true; fireRocket(); });
+  for(const ev of ['pointerup','pointercancel','pointerleave']) fb.addEventListener(ev,()=>{ fireHeld=false; });
+}
 function explodeAt(x,y,z,big){
   boomSfx(); shakeT=Math.min(1,shakeT+0.25);
   tmpV.set(x,y,z);
@@ -3056,6 +3186,18 @@ for(let i=0;i<8;i++){
     pos:new THREE.Vector3()
   });
 }
+// combat reserves: only used by Combat waves
+for(let i=0;i<12;i++){
+  const big=i>=10;
+  ENEMIES.push({
+    g:makeEnemyPlane(big), big, pool:true,
+    hp:0, maxHp:big?3:1,
+    cx:0, cz:0, alt:400,
+    a:rnd(0,6), heading:0,
+    state:'patrol', fireT:1.5, respawnT:1e9,
+    pos:new THREE.Vector3()
+  });
+}
 // split interceptors: dormant until a bomber breaks apart
 for(let i=0;i<6;i++){
   const g=makeEnemyPlane(false,false); g.scale.setScalar(1.7);
@@ -3081,8 +3223,9 @@ for(let i=0;i<3;i++){
 }
 function setEnemies(on){
   LEV.spawnT=3;
+  G.wave=0; G.waveT=2.5; G.kills=0;
   for(const e of ENEMIES){
-    if(e.escort||e.kid){ e.hp=0; e.g.visible=false; e.respawnT=1e9; continue; }
+    if(e.escort||e.kid||e.pool||G.mode==='combat'){ e.hp=0; e.g.visible=false; e.respawnT=1e9; continue; }
     e.hp=e.maxHp; e.respawnT=0; e.state='patrol';
     e.pos.set(e.cx+Math.cos(e.a)*600, e.alt, e.cz+Math.sin(e.a)*600);
     e.g.position.copy(e.pos);
@@ -3090,6 +3233,27 @@ function setEnemies(on){
   }
   for(const b of BULLETS){ b.life=0; b.m.visible=false; }
   for(const r of ROCKETS){ r.life=0; r.g.visible=false; }
+}
+function spawnWave(n){
+  // waves grow: 3, 4, 6, 7, 9 … fighters, plus a bomber every second wave
+  let fighters=Math.min(15,2+Math.round(n*1.5)), bombers=Math.min(5,Math.floor(n/2));
+  const pool=ENEMIES.filter(e=>!e.escort&&!e.kid&&e.hp<=0);
+  let made=0;
+  for(const e of pool){
+    if(e.big?bombers<=0:fighters<=0) continue;
+    if(e.big) bombers--; else fighters--;
+    const a=rnd(0,Math.PI*2), r=rnd(1300,2000);
+    e.pos.set(F.pos.x+Math.cos(a)*r, 0, F.pos.z+Math.sin(a)*r);
+    e.pos.y=Math.max(terrainH(e.pos.x,e.pos.z)+140, F.pos.y+rnd(-120,180));
+    e.alt=e.pos.y; e.cx=e.pos.x; e.cz=e.pos.z;
+    e.heading=Math.atan2(F.pos.x-e.pos.x, F.pos.z-e.pos.z);
+    e.hp=e.maxHp; e.g.visible=true; e.state='chase'; e.fireT=rnd(1.5,3); e.respawnT=1e9;
+    e.g.position.copy(e.pos);
+    made++;
+  }
+  hudMode(); hudScore();
+  showToast('⚔️ Wave '+n, made+' hostiles inbound. Survive and take them down.',3000);
+  sfx([392,523,659],0.3,'sawtooth',0.08);
 }
 const BULLETS=[];
 (function makeBullets(){
@@ -3129,13 +3293,14 @@ function updateBullets(dt){
   }
 }
 function hitEnemy(r){
-  if(G.mode!=='collect') return false;
+  if(!isHostile()) return false;
   for(const e of ENEMIES){
     if(e.hp<=0) continue;
     if(r.g.position.distanceTo(e.pos)<(e.big?48:26)){
       e.hp--;
       if(e.hp<=0){
-        e.g.visible=false; e.respawnT=(e.escort||e.kid)?1e9:20;
+        e.g.visible=false; e.respawnT=(e.escort||e.kid||G.mode==='combat')?1e9:20;
+        if(G.mode==='combat'){ G.kills++; G.waveT=3.5; }
         explodeAt(e.pos.x,e.pos.y,e.pos.z,true);
         nrm.set(rnd(-1,1),1,rnd(-1,1)).normalize();
         for(let i=0;i<5;i++) spawnDebris(e.pos.x,e.pos.y,e.pos.z,16,16,16,e.big?0x5a3a6e:0x8e4a5a,nrm);
@@ -3155,7 +3320,8 @@ function hitEnemy(r){
         }
         const pts=e.big?120:(e.kid?20:40);
         G.score+=pts; hudScore();
-        showToast(e.big?'💥 Bomber down!':'💥 Fighter down!','+'+pts+' points',2500);
+        if(G.mode==='combat') showToast(e.big?'💥 Bomber down!':'💥 Kill!',G.kills+' destroyed this run',2000);
+        else showToast(e.big?'💥 Bomber down!':'💥 Fighter down!','+'+pts+' points',2500);
       } else {
         showToast('💢 Direct hit','The big one needs '+e.hp+' more rocket'+(e.hp>1?'s':'')+'!',1800);
       }
@@ -3165,8 +3331,12 @@ function hitEnemy(r){
   return false;
 }
 function updateEnemies(dt,t){
-  if(G.mode!=='collect') return;
+  if(!isHostile()) return;
   const pp=F.pos;
+  // Combat: the next, bigger wave arrives once the sky is clear
+  if(G.mode==='combat'&&!G.dead){
+    if(!ENEMIES.some(e2=>e2.hp>0)){ G.waveT-=dt; if(G.waveT<=0) spawnWave(++G.wave); }
+  }
   // the mothership scrambles its escort wing when you get close
   const shipD=Math.hypot(pp.x-LEV.x, pp.z-LEV.z);
   if(shipD<1700&&!F.grounded){
@@ -3195,9 +3365,10 @@ function updateEnemies(dt,t){
       continue;
     }
     const d=e.pos.distanceTo(pp);
-    const aggro=e.big?1300:950;
-    if(d<aggro && !F.grounded) e.state='chase';
-    else if(d>aggro*1.6 || F.grounded) e.state='patrol';
+    const aggro=G.mode==='combat'?1e9:(e.big?1300:950);
+    const safe=F.grounded&&G.mode!=='combat';   // in Combat, landing is no hiding place
+    if(d<aggro && !safe) e.state='chase';
+    else if(d>aggro*1.6 || safe) e.state='patrol';
     // am I being tailed? then flee straight-ish with a gentle weave — a fair target
     const behind=((pp.x-e.pos.x)*Math.sin(e.heading)+(pp.z-e.pos.z)*Math.cos(e.heading))<0;
     const hunted=e.state==='chase'&&behind&&d<750;
@@ -3226,7 +3397,7 @@ function updateEnemies(dt,t){
     e.g.rotation.z=clamp(-diff,-0.7,0.7);
     if(e.state==='chase'&&!hunted&&d<620&&Math.abs(diff)<0.5){
       e.fireT-=dt;
-      if(e.fireT<=0){ e.fireT=e.big?2.0:1.2; fireBullet(e); }
+      if(e.fireT<=0){ e.fireT=(e.big?2.0:1.2)*(G.mode==='combat'?Math.max(0.6,1-G.wave*0.04):1); fireBullet(e); }
     }
   }
   updateBullets(dt);
@@ -3275,7 +3446,7 @@ function drawRadar(){
     rctx.fillStyle=s.kind==='genius'?'#ffd166':'#ffffff';
     rctx.fillRect(R-dx-1.7, R-dz-1.7, 3.4,3.4);
   }
-  if(G.mode==='collect'){
+  if(isHostile()){
     rctx.fillStyle='#ff5a4a';
     for(const e of ENEMIES){
       if(e.hp<=0) continue;
@@ -3296,6 +3467,150 @@ function drawRadar(){
 const fwd=new THREE.Vector3(), camTgt=new THREE.Vector3(), lookV=new THREE.Vector3();
 let boundaryShown=0;
 
+// =========================================================
+// HARD / REALISTIC FLIGHT MODEL
+// Point-mass flight-path equations: lift bends the path, gravity pulls it
+// down, thrust fights drag. Stall speed rises with the square root of the
+// g-load; induced drag grows with g. Nothing levels itself.
+// =========================================================
+function simFlight(dt,rx,ry,th,resp){
+  const S=F.sim, D=DIFF[G.diff], g=SIM_G, real=G.diff==='realistic', hostile=isHostile();
+  F.throttle=clamp(F.throttle+th*0.55*dt,0,1);
+  const Tmax=S.tw*D.twK*g;
+  const a=Tmax/(F.maxS*F.maxS);               // parasitic drag: full throttle tops out at maxS
+  const b=a*Math.pow(1.35*S.vs,4);            // induced drag: minimum-drag speed ≈ 1.35 × stall
+  let T=F.throttle*Tmax*(0.35+0.65*resp)*(G.critical?0.4:1);
+  if(F.boosting) T=Math.max(T,a*F.boostTop*F.boostTop*1.05);
+  const e=-ry*(G.invY?-1:1);                  // stick back = +1
+  let V=F.speed;
+  F.warn='';
+  fwd.set(Math.sin(F.heading),0,Math.cos(F.heading));
+  const prevY=F.pos.y;
+  if(F.grounded){
+    // ---- on the ground: thrust vs drag and rolling friction; idle + − brakes, then reverses
+    let acc=T-a*V*Math.abs(V)-0.03*g*Math.sign(V);
+    if(F.throttle===0&&th<0) acc=V>2?acc-0.35*g:-18;
+    else if(F.throttle===0&&Math.abs(V)<3) acc=-V*2;
+    V=clamp(V+acc*dt,-40,F.maxS);
+    F.heading-=rx*1.0*dt*clamp(Math.abs(V)/80,0,1);
+    F.roll=lerp(F.roll,0,1-Math.exp(-6*dt));
+    // the nose only comes up once the elevator has enough air over it
+    if(V>S.vr*0.92&&e>0.15) F.pitch=Math.min(F.pitch+S.rot*e*dt,0.32);
+    else {
+      F.pitch=lerp(F.pitch,0,1-Math.exp(-3*dt));
+      if(e>0.4&&V>40&&V<S.vr*0.92&&!F.vrHint){
+        F.vrHint=true;
+        showToast('🛫 Not fast enough','Rotate at '+Math.round(S.vr*1.2)+' km/h. Keep the throttle up.',2600);
+      }
+    }
+    if(F.pitch>S.tail&&!F.tailHit){
+      F.tailHit=true;
+      if(real&&hostile){ applyDamage(G.hpMax*0.18); if(G.dead) return false;
+        showToast('💥 Tail strike','Rotated too steeply: the tail scraped the ground.',2400); }
+    }
+    if(F.pitch<S.tail*0.6) F.tailHit=false;
+    fwd.set(Math.sin(F.heading),0,Math.cos(F.heading));
+    F.pos.addScaledVector(fwd,V*dt);
+    F.aoa=0;
+  } else {
+    // ---- in the air
+    const auth=Math.min(1,Math.pow(V/(S.vs*1.25),2))*(0.35+0.65*resp)*(G.critical?0.6:1)*(F.stalled?0.5:1);
+    F.roll+=rx*S.roll*D.rollK*auth*dt;        // roll rate: the bank stays where you leave it
+    if(F.roll>Math.PI) F.roll-=2*Math.PI; else if(F.roll<-Math.PI) F.roll+=2*Math.PI;
+    const cg=Math.cos(F.pitch), cphi=Math.cos(F.roll), sphi=Math.sin(F.roll);
+    const nMax=Math.pow(V/S.vs,2), nMin=-0.5*nMax;   // the wing's limit grows with speed²
+    let nTrim;
+    if(real){ F.vTrim+=(V-F.vTrim)*0.12*dt; nTrim=Math.pow(V/F.vTrim,2); } // speed-stable, slowly retrimmed
+    else nTrim=cg*cphi/Math.max(cphi*cphi,0.16);                           // holds its path, even in turns
+    const nPilot=S.gLim*1.25;
+    let nCmd=e>=0 ? nTrim+e*(nPilot-nTrim) : nTrim+e*(nTrim+0.5*S.gLim);
+    if(!real&&V>=S.vs) nCmd=Math.min(nCmd,nMax*0.95);   // Hard: stick can't stall a flying wing
+    // stall: asking the wing for more lift than it can give
+    const stalled=nCmd>nMax||V<S.vs*0.98;
+    if(stalled&&!F.stalled) F.dropDir=Math.random()<0.5?-1:1;
+    F.stalled=stalled;
+    if(stalled){
+      F.warn='STALL'; shakeT=Math.max(shakeT,0.12);
+      F.hornT-=dt; if(F.hornT<=0){ F.hornT=0.45; sfx([440],0.22,'square',0.05); }
+      if(real) F.roll+=F.dropDir*0.8*dt;      // a wing drops
+    }
+    F.nG+=(clamp(nCmd,nMin,nMax)-F.nG)*Math.min(1,7*dt);
+    const n=F.nG, Vc=Math.max(V,20);
+    F.pitch=clamp(F.pitch+(g/Vc)*(n*cphi-cg)*dt,-1.45,1.45);
+    F.heading-=(g/Vc)*n*sphi/Math.max(cg,0.15)*dt;
+    V+=(T-a*V*V-b*n*n/(Vc*Vc)-g*Math.sin(F.pitch))*dt; // climbing costs speed, diving gains it
+    V=Math.max(V,8);
+    F.aoa=0.26*clamp(n/Math.max(nMax,0.05),-0.6,1.15);
+    if(n>S.gLim){
+      F.warn='OVER-G '+n.toFixed(1)+' g';
+      if(real&&hostile){
+        if(n>S.gLim*1.5){ destroyPlane('Pulled '+n.toFixed(1)+' g: the wings failed. Limit is '+S.gLim+' g.'); return false; }
+        applyDamage((n-S.gLim)*G.hpMax*0.25*dt); if(G.dead) return false;
+      }
+    }
+    if(V>F.maxS*1.12){
+      F.warn='OVERSPEED';
+      if(real&&hostile){ applyDamage(G.hpMax*1.5*dt*(V/F.maxS-1.12)); if(G.dead) return false; }
+    }
+    fwd.set(Math.sin(F.heading),0,Math.cos(F.heading));
+    F.pos.addScaledVector(fwd,Math.cos(F.pitch)*V*dt);
+    F.pos.y+=Math.sin(F.pitch)*V*dt;
+  }
+  F.speed=V;
+  F.vy=(F.pos.y-prevY)/Math.max(dt,0.001);
+
+  // ---- contact with ground and rooftops
+  const sup=supportHeight(F.pos.x,F.pos.z,F.pos.y);
+  F.supY=sup.y;
+  const restY=sup.y+(F.gearDown?F.gearH:F.gearH+3);
+  if(F.grounded){
+    if(sup.y<F.surfY-30){ F.grounded=false; F.nG=0.3; F.vTrim=Math.max(V,S.vs); }
+    else { F.pos.y=restY; F.surfY=sup.y; }
+    if(sup.st&&sup.st.ship) F.pos.x+=LEV.vx*dt;
+    if(F.grounded&&F.pitch>=0.08&&V>=S.vr*(1.12-0.5*F.pitch)){   // the wing carries the weight: lift-off
+      // climb out on the path the wing gives, trimmed slightly nose-up like a real departure
+      F.grounded=false; F.vTrim=V*0.95; F.nG=1;
+      F.pitch=Math.max(0.04,F.pitch-0.26*Math.pow(S.vs/V,2)); F.vrHint=false;
+      showToast('🛫 Airborne','Positive climb: gear up 🛬 and let the speed build.',2400);
+    }
+    return true;
+  }
+  if(F.pos.y>=restY) return true;
+  const sink=Math.max(0,-F.vy), ms=(sink*0.333).toFixed(1);
+  const level=Math.abs(F.roll)<0.17&&F.pitch>-0.25;
+  F.pos.y=restY;
+  if(F.gearDown&&level&&sink<=D.gearCrash){       // touchdown
+    F.grounded=true; F.surfY=sup.y; F.roll=0; F.pitch=Math.max(0,F.aoa*0.6); F.tailHit=false; F.vrHint=false;
+    if(sink>D.gearOk&&hostile){
+      applyDamage(G.hpMax*(0.08+(real?0.35:0.2)*(sink-D.gearOk)/(D.gearCrash-D.gearOk)));
+      if(G.dead) return false;
+      showToast('🛬 Hard landing','Touched down at '+ms+' m/s: the gear took a beating.',2600);
+    }
+    landedOn(sup);
+    return true;
+  }
+  if(!F.gearDown&&level&&sink<=D.gearOk){         // belly landing
+    F.grounded=true; F.surfY=sup.y; F.roll=0; F.pitch=0; V=F.speed=V*0.5;
+    if(hostile){ applyDamage(G.hpMax*0.4); if(G.dead) return false; }
+    showToast('🛬 Belly landing','Gear was up: she slid in on her belly.',2600);
+    return true;
+  }
+  if(hostile){
+    if(real||G.critical){
+      destroyPlane(!F.gearDown&&!level ? 'Flew into the ground.'
+        : Math.abs(F.roll)>=0.17 ? 'Caught a wingtip on touchdown.'
+        : 'Hit the ground at '+ms+' m/s. The gear is built for about 3 m/s.');
+      return false;
+    }
+    applyDamage(Math.round(sink*0.6+15)); if(G.dead) return false;
+  }
+  if(sup.block){ nrm.set(0,1,0); impact(sup.st,sup.block,nrm,F.pos.x,sup.y,F.pos.z); if(G.dead) return false; }
+  F.pitch=Math.max(F.pitch,0.1); F.speed*=0.85;    // bounce and skid (Free Flight / survived Hard)
+  tmpV.copy(F.pos); tmpV.y=sup.y+4;
+  for(let k=0;k<4;k++) spawnPuff(tmpV,darkTex,null,5,0.6);
+  return true;
+}
+
 function updateFlight(dt){
   let rx=joy.x, ry=joy.y;
   if(keys['arrowleft']||keys['a']) rx=-1;
@@ -3308,12 +3623,14 @@ function updateFlight(dt){
 
   const resp=respFactor();
   // boost — burns the meter, refills when idle; guarantees escape speed
-  const bh=(boostBtnHeld||keys['b'])&&!F.grounded;
+  const bh=(boostBtnHeld||keys['b'])&&!F.grounded&&(G.diff!=='realistic'||F.sim.ab);
   F.boosting=bh&&F.boost>1;
   if(F.boosting) F.boost=Math.max(0,F.boost-35*dt);
   else F.boost=Math.min(100,F.boost+12*dt);
   $('boostFill').style.width=F.boost+'%';
 
+  if(G.diff!=='easy'){ if(simFlight(dt,rx,ry,th,resp)===false) return; }
+  else {
   const effMax=F.boosting?F.boostTop:lerp(150,F.maxS,clamp(resp,0,1));
   F.targetSpeed=clamp(F.targetSpeed+th*F.accel*dt, F.grounded?-70:F.minS, effMax); // reverse taxi on land
   if(F.boosting) F.targetSpeed=effMax;
@@ -3343,11 +3660,7 @@ function updateFlight(dt){
   // ---- landing / ground handling (terrain AND block rooftops) ----
   const sup=supportHeight(F.pos.x,F.pos.z,F.pos.y);
   const restY=sup.y+(F.gearDown?F.gearH:F.gearH+3);
-  // the plane casts a shadow on whatever is below — ground or rooftop
-  shadow.position.set(F.pos.x, sup.y+1.5, F.pos.z);
-  const agl=Math.max(0,F.pos.y-sup.y);
-  shadow.material.opacity=clamp(0.36-agl/1200,0.04,0.36);
-  shadow.scale.setScalar(clamp(1.5-agl/900,0.4,1.5)*F.shadowK);
+  F.supY=sup.y;
   if(F.grounded){
     if(th===0){ F.speed=lerp(F.speed,0,1-Math.exp(-1.2*dt)); F.targetSpeed=lerp(F.targetSpeed,0,1-Math.exp(-1.8*dt)); }
     if(sup.y<F.surfY-30){ F.grounded=false; } // rolled off an edge — fall
@@ -3395,6 +3708,12 @@ function updateFlight(dt){
       if(F.pitch<0)F.pitch=lerp(F.pitch,0.06,0.5);
     }
   }
+  } // end Easy flight model
+  // the plane casts a shadow on whatever is below — ground or rooftop
+  shadow.position.set(F.pos.x, F.supY+1.5, F.pos.z);
+  const agl=Math.max(0,F.pos.y-F.supY);
+  shadow.material.opacity=clamp(0.36-agl/1200,0.04,0.36);
+  shadow.scale.setScalar(clamp(1.5-agl/900,0.4,1.5)*F.shadowK);
   if(F.pos.y>MAX_ALT){ F.pos.y=MAX_ALT; if(F.pitch>0)F.pitch=lerp(F.pitch,-0.02,0.5); }
 
   const dCenter=Math.hypot(F.pos.x,F.pos.z);
@@ -3412,8 +3731,9 @@ function updateFlight(dt){
 
   plane.position.copy(F.pos);
   plane.rotation.y=F.heading;
-  plane.rotation.x=-F.pitch;
-  plane.rotation.z=F.roll*0.9; // lean into the turn
+  const sim=G.diff!=='easy';
+  plane.rotation.x=-(F.pitch+(sim&&!F.grounded?F.aoa:0)); // nose rides above the path when slow
+  plane.rotation.z=sim?F.roll:F.roll*0.9; // lean into the turn
   const md=plane.userData.model?plane.userData.model.userData:null;
   if(md){
     for(const sp2 of md.spinners) sp2.rotation.z+=dt*(8+F.speed*0.18)*resp;
@@ -3440,9 +3760,11 @@ function updateFlight(dt){
   // camera (wider FOV while boosting)
   camera.fov=lerp(camera.fov,F.boosting?70:62,1-Math.exp(-4*dt));
   camera.updateProjectionMatrix();
-  camTgt.copy(F.pos).addScaledVector(fwd,-F.camD); camTgt.y+=F.camH;
+  const tanH=Math.tan(camera.fov*Math.PI/360)*camera.aspect;
+  const camD=Math.max(F.camD,(F.halfSpan||0)*1.3/Math.max(tanH,0.05)), camH=F.camH*camD/F.camD;
+  camTgt.copy(F.pos).addScaledVector(fwd,-camD); camTgt.y+=camH;
   camera.position.lerp(camTgt,1-Math.exp(-5*dt));
-  lookV.copy(F.pos).addScaledVector(fwd,F.camD*0.6); lookV.y+=5;
+  lookV.copy(F.pos).addScaledVector(fwd,camD*0.6); lookV.y+=5;
   camera.lookAt(lookV);
   if(shakeT>0){
     shakeT=Math.max(0,shakeT-dt*1.6);
@@ -3475,8 +3797,7 @@ function updateSites(dt,t){
     const st=facts[s.name]||(facts[s.name]={inside:false});
     if(d<s.trigR&&!st.inside){
       st.inside=true;
-      showToast((s.kind==='genius'?'🗿 ':'🏛 ')+s.name, s.fact, 5200);
-      chimeSfx();
+      if(G.mode!=='combat'){ showToast((s.kind==='genius'?'🗿 ':'🏛 ')+s.name, s.fact, 5200); chimeSfx(); }
       if(G.mode==='collect'){ G.score+=5; hudScore(); }
     } else if(d>s.trigR+450) st.inside=false;
   }
@@ -3515,10 +3836,10 @@ function updateSites(dt,t){
 }
 
 function updateRings(dt,t){
-  if(G.mode!=='collect') return;
+  if(!isHostile()) return;
   if(G.streakT>0){ G.streakT-=dt; if(G.streakT<=0){ G.streak=0; G.mult=1; hudScore(); } }
   // hull never self-heals in the air — land to repair, or grab a medkit
-  if(F.grounded&&!G.dead&&G.hp<G.hpMax){
+  if(F.grounded&&!G.dead&&G.hp<G.hpMax&&DIFF[G.diff].kits){
     G.hp=Math.min(G.hpMax,G.hp+7*dt); hudHP();
     if(G.critical&&G.hp>=G.hpMax*0.3) setCritical(false);
   }
@@ -3537,6 +3858,7 @@ function updateRings(dt,t){
       showToast('🩹 Repair kit','+35 hull',2200);
     }
   }
+  if(G.mode!=='collect') return;
   for(const r of rings){
     if(!r.alive){
       if(r.respawnT>0){ r.respawnT-=dt; if(r.respawnT<=0) respawnRing(r); }
@@ -3594,8 +3916,12 @@ function updEngine(t){
 }
 
 function updateHUD(){
-  $('speedChip').textContent=Math.round(F.speed*1.2)+' km/h';
-  $('altChip').textContent=Math.round(F.pos.y)+' m';
+  const sim=G.diff!=='easy';
+  $('speedChip').textContent=Math.round(F.speed*1.2)+' km/h'+(sim?' · '+Math.round(F.throttle*100)+'%':'');
+  const vs=F.vy*0.333;
+  $('altChip').textContent=Math.round(F.pos.y)+' m'+(sim?' · '+(vs>=0?'↑':'↓')+Math.abs(vs).toFixed(1)+' m/s':'');
+  const w=$('warnChip');
+  if(sim&&F.warn){ w.style.display='inline-flex'; w.textContent='⚠ '+F.warn; } else w.style.display='none';
 }
 
 let last=performance.now(), frame=0;
@@ -3609,6 +3935,7 @@ function loop(now){
     updateFlight(dt);
     checkCollisions(dt);
     checkTreeHits();
+    if(fireHeld||keys[' ']) fireRocket();
     updateRockets(dt);
     updateEnemies(dt,t);
     updateSites(dt,t);
